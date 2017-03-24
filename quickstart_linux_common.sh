@@ -2,6 +2,7 @@
 # QuickStart Common Linux Tools
 # author: tonynv@amazon.com
 #
+
 # Supported operating systems:
 # -Red Hat Enterprise Linux
 # -Centos
@@ -9,12 +10,27 @@
 # -Fedora
 # -Amazon Linux
 # -SUSE
+#
 
 # Configuration
+#
 PROGRAM='QuickStart Linux Common Tools'
 
-# Detects operating system type and return vaule
-# If no varible is passed in function will print to stdout
+# Usage 
+#
+# To use the functions defined here (source this file):
+# Example:
+#   source quickstart_linux_common.source
+#   or
+#   source /dev/stdin  <<< "$(curl -s https://quickstart-reference.s3.amazonaws.com/linux/utilities/quickstart_linux_common.source)"
+#   # To print os type to std out 
+#   get_os-type 
+#   # to assign the os type to a variable OS
+#   get_os-type OS
+#
+
+# Detects operating system type and return value
+# If no variable is passed in function will print to std-out
 # 
 function qs_get-ostype () {
     local __return=$1
@@ -49,7 +65,7 @@ function qs_get-ostype () {
 }
 
 # Returns operating system version or return 1
-# If no varible is passed in function will print to stdout
+# If no variable is passed in function will print to std-out
 # 
 function qs_get-osversion () {
     local __return=$1
@@ -80,8 +96,9 @@ function qs_get-osversion () {
     fi
 }
 
-# If python is install Returns default python path
-# If no varible is passed in function will print to stdout
+# If python is install returns default python path
+# If no variable is passed in function will print to std-out
+#
 function qs_get-python-path () {
     local __return=$1
     # Set PYTHON_EXECUTEABLE to default python version
@@ -105,7 +122,8 @@ function qs_get-python-path () {
 
 }
 
-# Installs pip from pypa
+# Installs pip from bootstrap.pypa
+#
 function  qs_bootstrap_pip () {
 	curl --silent \
 	 --show-error \
@@ -113,8 +131,12 @@ function  qs_bootstrap_pip () {
 	https://bootstrap.pypa.io/get-pip.py | sudo qs_get-python-path
 }
 
-# Updates supported operating systems to latest or exit with code (1)
-# If no varible is passed in function will print to stdout
+# Updates supported operating systems to latest 
+# or 
+# exit with code (1)
+#
+# If no variable is passed in function will print to std-out
+#
 function qs_update-os () {
     # Assigns values to INSTANCE_OSTYPE
     get_ostype INSTANCE_OSTYPE
