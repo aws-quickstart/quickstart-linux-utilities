@@ -3,13 +3,17 @@
 # author: tonynv@amazon.com
 #
 
-# Supported operating systems:
-# -Red Hat Enterprise Linux
-# -Centos
-# -Ubuntu
-# -Fedora
-# -Amazon Linux
-# -SUSE
+# Supported only while bootstrapping Amazon ec2:
+# 
+#  Official vendor images
+# -Red Hat Enterprise Linux 7   https://aws.amazon.com/marketplace/pp/B00KWBZVK6
+# -Centos 7                     https://aws.amazon.com/marketplace/pp/B00O7WM7QW
+# -Ubuntu 16.04 (LTS)           https://aws.amazon.com/marketplace/pp/B01JBL2M0O
+# -Amazon Linux 2016.09.1       https://aws.amazon.com/marketplace/pp/B00CIYTQTC
+# -SUSE Linux Enterprise 12     https://aws.amazon.com/marketplace/pp/B00PMM99PI
+#  Supported Edge releases
+# -Fedora 25              https://alt.fedoraproject.org/cloud/
+# -Ubuntu 16.04           https://cloud-images.ubuntu.com/releases/14.04/14.04/
 #
 
 # Configuration
@@ -74,7 +78,7 @@ function qs_get-osversion () {
     local __return=$1
     DETECTION_STRING="/etc/*-release"
     if [[ $(ls ${DETECTION_STRING})  ]]; then
-        OSLEVEL=$(cat /etc/*-release \
+        OSLEVEL=$(cat ${DETECTION_STRING} \
         | grep VERSION_ID \
         | tr -d \" \
         | awk -F= '{print $2}')
@@ -151,7 +155,7 @@ function qs_update-os () {
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
 
-    if [ "$INSTANCE_OSTYPE" == "AMZN" ]; then
+    if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
         apt update && apt upgrade -y 
@@ -188,7 +192,7 @@ qs_get-osversion INSTANCE_OSVERSION
 
 
 check_cmd () {
-    if type $1 &>/dev/null; then
+    if hash $1 &>/dev/null; then
         echo "Dependencies Met!"
         return 0
     else
@@ -197,22 +201,22 @@ check_cmd () {
     fi
 }
 
-if [ "$INSTANCE_OSTYPE" == "AMZN" ]; then
+if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
     check_cmd curl 'yum clean all && yum install curl -y'
 elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
-    check_cmd curl;[[ $? -eq 1 ]] &&apt update && apt install curl
+    check_cmd curl;[[ $? -eq 1 ]] && apt update && apt install curl -y || return 0
 
 elif [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
-    check_cmd curl;[[ $? -eq 1 ]] && yum clean && yum install curl -y
+    check_cmd curl;[[ $? -eq 1 ]] && yum clean && yum install curl -y || return 0
 
 elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
-    check_cmd curl;[[ $? -eq 1 ]] && yum clean && yum install curl -y
+    check_cmd curl;[[ $? -eq 1 ]] && yum clean && yum install curl -y || return 0
 
 elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
-    check_cmd curl;[[ $? -eq 1 ]] && dnf clean && dnf install curl -y
+    check_cmd curl;[[ $? -eq 1 ]] && dnf clean && dnf install curl -y || return 0
 
 elif [ "$INSTANCE_OSTYPE" == "SUSE" ]; then
-    check_cmd curl;[[ $? -eq 1 ]] && zypper refresh && zypper in curl
+    check_cmd curl;[[ $? -eq 1 ]] && zypper refresh && zypper install curl -y || return 0
 else
     echo "[FAIL] : Dependencies not satisfied!"
     exit 1
