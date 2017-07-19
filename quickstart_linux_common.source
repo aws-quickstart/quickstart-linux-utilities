@@ -24,8 +24,9 @@ PROGRAM='QuickStart Linux Common Tools'
 #
 # To use the functions defined here (source this file):
 # Example:
+#   load script into scripts
 #   source quickstart_linux_common.source
-#   or
+#   or 
 #   source /dev/stdin  <<< "$(curl -s https://quickstart-reference.s3.amazonaws.com/linux/utilities/quickstart_linux_common.source)"
 #   # To print os type to std out 
 #   get_os-type 
@@ -36,8 +37,6 @@ PROGRAM='QuickStart Linux Common Tools'
 # Detects operating system type and return value
 # If no variable is passed in function will print to std-out
 # 
-
-
 
 function qs_get-ostype () {
     local __return=$1
@@ -132,6 +131,7 @@ function qs_get-python-path () {
 # Installs pip from bootstrap.pypa
 #
 function  qs_bootstrap_pip () {
+    echo "[INFO] Check for python/pip"
     qs_get-python-path PYTHON_EXECUTEABLE
     if  [ $? -eq 0 ] ;then
     curl --silent \
@@ -142,6 +142,38 @@ function  qs_bootstrap_pip () {
         echo $PYTHON_EXECUTEABLE
         exit 1
     fi
+}
+
+# Relax require tty
+#
+function  qs_notty () {
+    qs_get-ostype INSTANCE_OSTYPE
+    qs_get-osversion INSTANCE_OSVERSION
+    echo "[INFO] Relax tty requirement"
+    if [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+       sed -i -e "s/Defaults    requiretty/Defaults    \!requiretty/" /etc/sudoers
+    elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+       sed -i -e "s/Defaults    requiretty/Defaults    \!requiretty/" /etc/sudoers
+    fi
+}
+
+# EPEL enabler
+#
+function  qs_enable_epel () {
+    qs_get-ostype INSTANCE_OSTYPE
+    qs_get-osversion INSTANCE_OSVERSION
+    echo "[INFO] Enable epel-release-latest-7"
+    if [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+        yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+        yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
+        echo "Enabled!"
+  
+    else
+        exit 1
+    fi
+
 }
 
 # Updates supported operating systems to latest 
@@ -155,6 +187,7 @@ function qs_update-os () {
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
 
+    echo "[INFO] Start OS Updates"
     if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
@@ -170,6 +203,37 @@ function qs_update-os () {
     else
         exit 1
     fi
+    echo "[INFO] Finished OS Updates"
+}
+
+# Install aws-cfn-bootstrap tools
+function qs_aws-cfn-bootstrap () {
+    # Assigns values to INSTANCE_OSTYPE
+    qs_get-ostype INSTANCE_OSTYPE
+    qs_get-osversion INSTANCE_OSVERSION
+
+    echo "[INFO] Start OS Updates"
+    if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
+        echo "[WARNING] not tested"
+        pip install aws-cfn-bootstrap
+    elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
+        echo "[WARNING] not tested"
+        pip install aws-cfn-bootstrap
+    elif [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+        echo "[INSTALL aws-cfn-bootstrap tool via pip]"
+        pip install aws-cfn-bootstrap
+    elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+        echo "[WARNING] not tested"
+        pip install aws-cfn-bootstrap
+    elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
+        echo "[WARNING] not tested"
+        pip install aws-cfn-bootstrap
+    elif [ "$INSTANCE_OSTYPE" == "SUSE" ]; then
+        zypper refresh && zypper update
+        echo "[WARNING] not implemeneted"
+    else
+        exit 1
+    fi
 }
 
 function available_functions () {
@@ -179,7 +243,9 @@ echo "Available quickstart_function ()
     #qs_get-osversion
     #qs_get-python-path
     #qs_bootstrap_pip
-    #qs_update-os"
+    #qs_update-os
+    #qs_enable_epel
+    #qs_notty"
 echo "--------------------------------"
 }
 
@@ -193,10 +259,10 @@ qs_get-osversion INSTANCE_OSVERSION
 
 check_cmd () {
     if hash $1 &>/dev/null; then
-        echo "Dependencies Met!"
+        echo "[INFO] Dependencies Met!"
         return 0
     else
-        echo "Installing Dependencies"
+        echo "[INFO] Installing Dependencies"
         return 1
     fi
 }
@@ -224,5 +290,12 @@ fi
 
 }
 
-# Run on initialization 
+# start exec 
+available_functions
+qs_notty
+qs_enable_epel
 install_dependancies
+qs_aws-cfn-bootstrap
+
+# end exec
+
