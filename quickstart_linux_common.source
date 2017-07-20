@@ -128,22 +128,6 @@ function qs_get-python-path () {
 
 }
 
-# Installs pip from bootstrap.pypa
-#
-function  qs_bootstrap_pip () {
-    echo "[INFO] Check for python/pip"
-    qs_get-python-path PYTHON_EXECUTEABLE
-    if  [ $? -eq 0 ] ;then
-    curl --silent \
-     --show-error \
-    --retry 5 \
-    https://bootstrap.pypa.io/get-pip.py | sudo $PYTHON_EXECUTEABLE
-    else 
-        echo $PYTHON_EXECUTEABLE
-        exit 1
-    fi
-}
-
 # Relax require tty
 #
 function  qs_notty () {
@@ -157,7 +141,26 @@ function  qs_notty () {
     fi
 }
 
-# EPEL enabler
+
+# Installs pip from bootstrap.pypa
+#
+function  qs_bootstrap_pip () {
+    qs_notty
+    echo "[INFO] Check for python/pip"
+    qs_get-python-path PYTHON_EXECUTEABLE
+    if  [ $? -eq 0 ] ;then
+    curl --silent \
+     --show-error \
+    --retry 5 \
+    https://bootstrap.pypa.io/get-pip.py | sudo $PYTHON_EXECUTEABLE
+    else 
+        echo $PYTHON_EXECUTEABLE
+        exit 1
+    fi
+}
+
+
+# Added EPEL enabler
 #
 function  qs_enable_epel () {
     qs_get-ostype INSTANCE_OSTYPE
@@ -212,22 +215,17 @@ function qs_aws-cfn-bootstrap () {
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
 
-    echo "[INFO] Start OS Updates"
+    echo "[INSTALL aws-cfn-bootstrap tools]"
     if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
-        echo "[WARNING] not tested"
-        pip install aws-cfn-bootstrap
+        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
-        echo "[WARNING] not tested"
-        pip install aws-cfn-bootstrap
+        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
-        echo "[INSTALL aws-cfn-bootstrap tool via pip]"
-        pip install aws-cfn-bootstrap
+        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
-        echo "[WARNING] not tested"
-        pip install aws-cfn-bootstrap
+        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
-        echo "[WARNING] not tested"
-        pip install aws-cfn-bootstrap
+        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "SUSE" ]; then
         zypper refresh && zypper update
         echo "[WARNING] not implemeneted"
@@ -292,10 +290,6 @@ fi
 
 # start exec 
 available_functions
-qs_notty
-qs_enable_epel
 install_dependancies
-qs_aws-cfn-bootstrap
-
 # end exec
 
