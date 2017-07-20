@@ -26,8 +26,6 @@ PROGRAM='QuickStart Linux Common Tools'
 # Example:
 #   load script into scripts
 #   source quickstart-cfn-tools.source
-#   or 
-#   source /dev/stdin  <<< "$(curl -s https://quickstart-reference.s3.amazonaws.com/linux/utilities/quickstart-cfn-tools.source)"
 #   # To print os type to std out 
 #   get_os-type 
 #   # to assign the os type to a variable OS
@@ -217,15 +215,15 @@ function qs_aws-cfn-bootstrap () {
 
     echo "[INSTALL aws-cfn-bootstrap tools]"
     if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
-        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
-        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
-        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
-        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
-        pip install pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "SUSE" ]; then
         zypper refresh && zypper update
         echo "[WARNING] not implemeneted"
@@ -243,7 +241,8 @@ echo "Available quickstart_function ()
     #qs_bootstrap_pip
     #qs_update-os
     #qs_enable_epel
-    #qs_notty"
+    #qs_notty
+    #qs_aws-cfn-bootstrap"
 echo "--------------------------------"
 }
 
