@@ -25,9 +25,9 @@ PROGRAM='QuickStart Linux Common Tools'
 # To use the functions defined here (source this file):
 # Example:
 #   load script into scripts
-#   source quickstart_linux_common.source
+#   source quickstart-cfn-tools.source
 #   or 
-#   source /dev/stdin  <<< "$(curl -s https://quickstart-reference.s3.amazonaws.com/linux/utilities/quickstart_linux_common.source)"
+#   source /dev/stdin  <<< "$(curl -s https://quickstart-reference.s3.amazonaws.com/linux/utilities/quickstart-cfn-tools.source)"
 #   # To print os type to std out 
 #   get_os-type 
 #   # to assign the os type to a variable OS
