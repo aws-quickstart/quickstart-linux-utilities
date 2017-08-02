@@ -232,9 +232,33 @@ function qs_aws-cfn-bootstrap () {
     fi
 }
 
+
+function qs_err () {
+        touch /var/tmp/stack_failed
+        echo "[FAILED] "
+}
+
+function qs_status () {
+    if [ -f /var/tmp/stack_failed ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+function qs_status.clean () {
+    if [ -f /var/tmp/stack_failed ]; then
+        echo "clean failed state"
+    else
+        echo "failed state not active"
+    fi
+}
+
 function available_functions () {
 echo "--------------------------------"
 echo "Available quickstart_function ()
+    #qs_err
+    #qs_status
     #qs_get-ostype
     #qs_get-osversion
     #qs_get-python-path
