@@ -40,13 +40,9 @@ function qs_get-ostype () {
     local __return=$1
     DETECTION_STRING="/etc/*-release"
     if [[ $(ls ${DETECTION_STRING}) ]]; then
-            OS=$(cat /etc/*-release \
-            | grep PRETTY_NAME \
-            | tr -d \" \
-            | awk -F= '{print $2}'\
-            | awk '{print $1,$2}'  \
-            | sed 's/Linux//g' \
-            | sed 's/[^a-zA-Z]//g')
+	OS=$( cat /etc/*-release \
+	| grep ^ID= |awk -F= '{print $2}'\
+	| tr -cd [:alpha:])
 
         if [ $? -eq 0 ] && [ "$__return" ];then
             eval $__return="${OS}"
@@ -132,9 +128,9 @@ function  qs_notty () {
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
     echo "[INFO] Relax tty requirement"
-    if [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+    if [ "$INSTANCE_OSTYPE" == "rhel" ]; then
        sed -i -e "s/Defaults    requiretty/Defaults    \!requiretty/" /etc/sudoers
-    elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
        sed -i -e "s/Defaults    requiretty/Defaults    \!requiretty/" /etc/sudoers
     fi
 }
@@ -164,9 +160,9 @@ function  qs_enable_epel () {
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
     echo "[INFO] Enable epel-release-latest-7"
-    if [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+    if [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
         yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         echo "Enabled!"
@@ -189,17 +185,17 @@ function qs_update-os () {
     qs_get-osversion INSTANCE_OSVERSION
 
     echo "[INFO] Start OS Updates"
-    if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
+    if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
         yum update -y
-    elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
         apt update && apt upgrade -y 
-    elif [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         yum update -y
-    elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         dnf update -y   
-    elif [ "$INSTANCE_OSTYPE" == "SUSE" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
         zypper refresh && zypper update
     else
         exit 1
@@ -214,17 +210,17 @@ function qs_aws-cfn-bootstrap () {
     qs_get-osversion INSTANCE_OSVERSION
 
     echo "[INSTALL aws-cfn-bootstrap tools]"
-    if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
+    if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-    elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-    elif [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-    elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-    elif [ "$INSTANCE_OSTYPE" == "SUSE" ]; then
+    elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
         zypper refresh && zypper update
         echo "[WARNING] not implemeneted"
     else
@@ -291,21 +287,21 @@ check_cmd () {
     fi
 }
 
-if [ "$INSTANCE_OSTYPE" == "Amazon" ]; then
+if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
     check_cmd curl 'yum clean all && yum install curl -y'
-elif [ "$INSTANCE_OSTYPE" == "Ubuntu" ]; then
+elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && apt update && apt install curl -y || return 0
 
-elif [ "$INSTANCE_OSTYPE" == "RedHat" ]; then
+elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && yum clean && yum install curl -y || return 0
 
-elif [ "$INSTANCE_OSTYPE" == "CentOS" ]; then
+elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && yum clean && yum install curl -y || return 0
 
 elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && dnf clean && dnf install curl -y || return 0
 
-elif [ "$INSTANCE_OSTYPE" == "SUSE" ]; then
+elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && zypper refresh && zypper install curl -y || return 0
 else
     echo "[FAIL] : Dependencies not satisfied!"
