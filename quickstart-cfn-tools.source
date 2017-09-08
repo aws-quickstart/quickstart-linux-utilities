@@ -265,7 +265,8 @@ echo "Available quickstart_function ()
     #qs_update-os
     #qs_enable_epel
     #qs_notty
-    #qs_aws-cfn-bootstrap"
+    #qs_aws-cfn-bootstrap
+    #qs_retry_command"
 echo "--------------------------------"
 }
 
@@ -309,6 +310,32 @@ else
 fi
 
 }
+
+# $1 = NumberOfRetries $2 = Command
+# qs_retry_command 10 some_command.sh
+# Command will retry with linear backoff
+qs_retry_command ()
+{
+
+    local -r __tries="$1"; shift
+    local -r __run="$@"
+    local -i ____backoff_delay=2
+    
+
+    until $__run
+        do
+                if (( __current_try == __tries ))
+                then
+                        echo "Tried $__current_try times and failed!"
+                        return 1
+                else
+                        echo "Retrying ...."
+                        sleep $((((__backoff_delay++)) + ((__current_try++))))
+                fi
+        done
+
+}
+
 
 # start exec 
 available_functions
