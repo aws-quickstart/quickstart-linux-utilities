@@ -313,13 +313,13 @@ fi
 
 # $1 = NumberOfRetries $2 = Command
 # qs_retry_command 10 some_command.sh
-# Command will retry with linear backoff
+# Command will retry with linear back-off
 qs_retry_command ()
 {
 
     local -r __tries="$1"; shift
     local -r __run="$@"
-    local -i ____backoff_delay=2
+    local -i __backoff_delay=2
     
 
     until $__run
