@@ -247,6 +247,7 @@ function qs_status () {
 function qs_status.clean () {
     if [ -f /var/tmp/stack_failed ]; then
         echo "clean failed state"
+        rm /var/tmp/stack_failed
     else
         echo "failed state not active"
     fi
