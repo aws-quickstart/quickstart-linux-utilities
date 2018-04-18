@@ -1,10 +1,10 @@
-#!/usr/bin/bash -e 
+#!/usr/bin/bash -e
 # QuickStart Common Linux Tools
 # author: tonynv@amazon.com
 #
 
 # Supported only while bootstrapping Amazon ec2:
-# 
+#
 #  Official vendor images
 # -Red Hat Enterprise Linux 7   https://aws.amazon.com/marketplace/pp/B00KWBZVK6
 # -Centos 7                     https://aws.amazon.com/marketplace/pp/B00O7WM7QW
@@ -20,21 +20,21 @@
 #
 PROGRAM='QuickStart Linux Common Tools'
 
-# Usage 
+# Usage
 #
 # To use the functions defined here (source this file):
 # Example:
 #   load script into scripts
 #   source quickstart-cfn-tools.source
-#   # To print os type to std out 
-#   get_os-type 
+#   # To print os type to std out
+#   get_os-type
 #   # to assign the os type to a variable OS
 #   get_os-type OS
 #
 
 # Detects operating system type and return value
 # If no variable is passed in function will print to std-out
-# 
+#
 
 function qs_get-ostype () {
     local __return=$1
@@ -66,7 +66,7 @@ function qs_get-ostype () {
 
 # Returns operating system version or return 1
 # If no variable is passed in function will print to std-out
-# 
+#
 function qs_get-osversion () {
     local __return=$1
     DETECTION_STRING="/etc/*-release"
@@ -147,7 +147,7 @@ function  qs_bootstrap_pip () {
      --show-error \
     --retry 5 \
     https://bootstrap.pypa.io/get-pip.py | sudo $PYTHON_EXECUTEABLE
-    else 
+    else
         echo $PYTHON_EXECUTEABLE
         exit 1
     fi
@@ -166,15 +166,14 @@ function  qs_enable_epel () {
         yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         echo "Enabled!"
-  
     else
         exit 1
     fi
 
 }
 
-# Updates supported operating systems to latest 
-# or 
+# Updates supported operating systems to latest
+# or
 # exit with code (1)
 #
 # If no variable is passed in function will print to std-out
@@ -188,13 +187,13 @@ function qs_update-os () {
     if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
-        apt update && apt upgrade -y 
+        apt update && apt upgrade -y
     elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
-        dnf update -y   
+        dnf update -y
     elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
         zypper refresh && zypper update
     else
@@ -320,7 +319,6 @@ qs_retry_command ()
     local -r __tries="$1"; shift
     local -r __run="$@"
     local -i __backoff_delay=2
-    
 
     until $__run
         do
@@ -337,7 +335,7 @@ qs_retry_command ()
 }
 
 
-# start exec 
+# start exec
 available_functions
 install_dependancies
 # end exec
