@@ -212,7 +212,9 @@ function qs_aws-cfn-bootstrap () {
     if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
-        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        sudo apt-get update -y
+        sudo apt install python2.7 python-pip -y
+        pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
@@ -224,6 +226,13 @@ function qs_aws-cfn-bootstrap () {
         echo "[WARNING] not implemeneted"
     else
         exit 1
+    fi
+
+    if [ $(which cfn-signal) ];then
+      echo "[FOUND] (cfn-signal)"
+    else
+      echo "[ERROR] (cfn-signal) not installed!!"
+      exit 1
     fi
 }
 
@@ -316,7 +325,6 @@ fi
 # Command will retry with linear back-off
 qs_retry_command ()
 {
-
     local -r __tries="$1"; shift
     local -r __run="$@"
     local -i __backoff_delay=2
@@ -334,7 +342,6 @@ qs_retry_command ()
         done
 
 }
-
 
 # start exec
 available_functions
