@@ -187,7 +187,7 @@ function qs_update-os () {
     if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
-        apt update && apt upgrade -y
+        apt update -y
     elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         yum update -y
     elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
