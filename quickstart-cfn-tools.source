@@ -153,6 +153,32 @@ function  qs_bootstrap_pip () {
     fi
 }
 
+# Installs and configures cloudwatch
+# Then adds /var/log/syslog to log collection
+function  qs_cloudwatch_tracklog () {
+    local -r __log="$@"
+    cat cloudwatch_logs.stub | sed s,__LOG__,$__log,g >> /var/awslogs/etc/awslogs.conf
+}
+
+function  qs_cloudwatch_install () {
+    echo "[INFO] Install AWS CloudWatch Agent"
+    REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
+    echo $'[general]\nstate_file = /var/awslogs/state/agent-state' >/var/awslogs/etc/awslogs.conf
+    qs_cloudwatch_tracklog /var/log/syslog
+    qs_get-python-path PYTHON_EXECUTEABLE
+
+    if  [ $? -eq 0 ] ;then
+    curl --silent \
+     --show-error \
+    --retry 5 \
+    https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
+    sudo $PYTHON_EXECUTEABLE ./awslogs-agent-setup.py --region $REGION -c var/awslogs/etc/awslogs.conf
+    else
+      systemctl is-active --quiet awslogs.service && echo "[INFO] Cloudwatch Service is running"
+        exit 1
+    fi
+}
+
 
 # Added EPEL enabler
 #
@@ -275,6 +301,8 @@ echo "Available quickstart_function ()
     #qs_enable_epel
     #qs_notty
     #qs_aws-cfn-bootstrap
+    #qs_cloudwatch_tracklog
+    #qs_cloudwatch_install
     #qs_retry_command"
 echo "--------------------------------"
 }
