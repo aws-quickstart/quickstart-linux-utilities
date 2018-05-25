@@ -158,21 +158,21 @@ function  qs_bootstrap_pip () {
 function  qs_cloudwatch_tracklog () {
     local -r __log="$@"
     cat cloudwatch_logs.stub | sed s,__LOG__,$__log,g >> /var/awslogs/etc/awslogs.conf
+    systemctl restart awslogs.service
 }
 
 function  qs_cloudwatch_install () {
     echo "[INFO] Install AWS CloudWatch Agent"
     REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
-    echo $'[general]\nstate_file = /var/awslogs/state/agent-state' >/var/awslogs/etc/awslogs.conf
-    qs_cloudwatch_tracklog /var/log/syslog
+    sudo echo $'[general]\nstate_file = /var/awslogs/state/agent-state' >awslogs.conf
+    cat cloudwatch_logs.stub | sed s,__LOG__,/var/log/syslog,g >> awslogs.conf
     qs_get-python-path PYTHON_EXECUTEABLE
-
     if  [ $? -eq 0 ] ;then
     curl --silent \
      --show-error \
     --retry 5 \
     https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
-    sudo $PYTHON_EXECUTEABLE ./awslogs-agent-setup.py --region $REGION -c var/awslogs/etc/awslogs.conf
+    sudo $PYTHON_EXECUTEABLE ./awslogs-agent-setup.py --region $REGION -c awslogs.conf -n
     else
       systemctl is-active --quiet awslogs.service && echo "[INFO] Cloudwatch Service is running"
         exit 1
