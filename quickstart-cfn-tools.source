@@ -143,10 +143,13 @@ function  qs_bootstrap_pip () {
     echo "[INFO] Check for python/pip"
     qs_get-python-path PYTHON_EXECUTEABLE
     if  [ $? -eq 0 ] ;then
-    curl --silent \
-     --show-error \
-    --retry 5 \
-    https://bootstrap.pypa.io/get-pip.py | sudo $PYTHON_EXECUTEABLE
+        command -v pip > dev/null 2&>1
+        if [ $? -eq 1 ]; then
+            curl --silent \
+             --show-error \
+            --retry 5 \
+            https://bootstrap.pypa.io/get-pip.py | sudo $PYTHON_EXECUTEABLE
+        fi
     else
         echo $PYTHON_EXECUTEABLE
         exit 1
