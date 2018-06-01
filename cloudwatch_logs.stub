@@ -1,7 +1,7 @@
 
 [__LOG__]
 buffer_duration = 5000
-log_group_name = __LOG__
+log_group_name = __LOGGROUP__
 file = __LOG__
 log_stream_name = {instance_id}
 initial_position = start_of_file
