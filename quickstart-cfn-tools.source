@@ -36,7 +36,7 @@ PROGRAM='QuickStart Linux Common Tools'
 # If no variable is passed in function will print to std-out
 #
 
-function qs_get-ostype () {
+function qs_get-ostype() {
     local __return=$1
     DETECTION_STRING="/etc/*-release"
     if [[ $(ls ${DETECTION_STRING}) ]]; then
@@ -99,7 +99,7 @@ function qs_get-osversion () {
 # If python is install returns default python path
 # If no variable is passed in function will print to std-out
 #
-function qs_get-python-path () {
+function qs_get-python-path() {
     local __return=$1
     # Set PYTHON_EXECUTEABLE to default python version
     if command -v python > /dev/null 2>&1; then
@@ -124,7 +124,7 @@ function qs_get-python-path () {
 
 # Relax require tty
 #
-function  qs_notty () {
+function  qs_notty() {
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
     echo "[INFO] Relax tty requirement"
@@ -138,7 +138,7 @@ function  qs_notty () {
 
 # Installs pip from bootstrap.pypa
 #
-function  qs_bootstrap_pip () {
+function  qs_bootstrap_pip() {
     qs_notty
     echo "[INFO] Check for python/pip"
     qs_get-python-path PYTHON_EXECUTEABLE
@@ -158,13 +158,13 @@ function  qs_bootstrap_pip () {
 
 # Installs and configures cloudwatch
 # Then adds /var/log/syslog to log collection
-function  qs_cloudwatch_tracklog () {
+function  qs_cloudwatch_tracklog() {
     local -r __log="$@"
     cat cloudwatch_logs.stub | sed s,__LOG__,$__log,g >> /var/awslogs/etc/awslogs.conf
     systemctl restart awslogs.service
 }
 
-function  qs_cloudwatch_install () {
+function  qs_cloudwatch_install() {
     echo "[INFO] Install AWS CloudWatch Agent"
     REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
     sudo echo $'[general]\nstate_file = /var/awslogs/state/agent-state' >awslogs.conf
@@ -185,7 +185,7 @@ function  qs_cloudwatch_install () {
 
 # Added EPEL enabler
 #
-function  qs_enable_epel () {
+function  qs_enable_epel() {
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
     echo "[INFO] Enable epel-release-latest-7"
@@ -207,7 +207,7 @@ function  qs_enable_epel () {
 #
 # If no variable is passed in function will print to std-out
 #
-function qs_update-os () {
+function qs_update-os() {
     # Assigns values to INSTANCE_OSTYPE
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
@@ -232,7 +232,7 @@ function qs_update-os () {
 }
 
 # Install aws-cfn-bootstrap tools
-function qs_aws-cfn-bootstrap () {
+function qs_aws-cfn-bootstrap() {
     # Assigns values to INSTANCE_OSTYPE
     qs_get-ostype INSTANCE_OSTYPE
     qs_get-osversion INSTANCE_OSVERSION
@@ -266,13 +266,13 @@ function qs_aws-cfn-bootstrap () {
 }
 
 
-function qs_err () {
+function qs_err() {
         touch /var/tmp/stack_failed
         echo "[FAILED] @ $1" >>/var/tmp/stack_failed
         echo "[FAILED] @ $1"
 }
 
-function qs_status () {
+function qs_status() {
     if [ -f /var/tmp/stack_failed ]; then
         printf 1;
         return 1
@@ -282,7 +282,7 @@ function qs_status () {
     fi
 }
 
-function qs_status.clean () {
+function qs_status.clean() {
     if [ -f /var/tmp/stack_failed ]; then
         echo "clean failed state"
         rm /var/tmp/stack_failed
@@ -291,9 +291,9 @@ function qs_status.clean () {
     fi
 }
 
-function available_functions () {
+function available_functions() {
 echo "--------------------------------"
-echo "Available quickstart_function ()
+echo "Available quickstart_functions:
     #qs_err
     #qs_status
     #qs_get-ostype
@@ -310,7 +310,7 @@ echo "Available quickstart_function ()
 echo "--------------------------------"
 }
 
-function install_dependancies () {
+function install_dependancies() {
 # Install dependencies
 # Assigns values to INSTANCE_
 #
@@ -318,7 +318,7 @@ qs_get-ostype INSTANCE_OSTYPE
 qs_get-osversion INSTANCE_OSVERSION
 
 
-check_cmd () {
+check_cmd() {
     if hash $1 &>/dev/null; then
         echo "[INFO] Dependencies Met!"
         return 0
@@ -354,8 +354,7 @@ fi
 # $1 = NumberOfRetries $2 = Command
 # qs_retry_command 10 some_command.sh
 # Command will retry with linear back-off
-qs_retry_command ()
-{
+function qs_retry_command() {
     local -r __tries="$1"; shift
     local -r __run="$@"
     local -i __backoff_delay=2
