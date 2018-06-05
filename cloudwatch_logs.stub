@@ -1,0 +1,9 @@
+
+[__LOG__]
+buffer_duration = 5000
+log_group_name = __LOGGROUP__
+file = __LOG__
+log_stream_name = __LOG__
+initial_position = start_of_file
+datetime_format = %b %d %H:%M:%S
+
