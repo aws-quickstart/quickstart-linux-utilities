@@ -43,7 +43,7 @@ function qs_get-ostype() {
 	OS=$( cat /etc/*-release \
 	| grep ^ID= |awk -F= '{print $2}'\
 	| tr -cd [:alpha:])
-	    if [ "${OS}" == "ol" ];then
+        if [ "${OS}" == "ol" ];then
             OS="rhel"
         fi
         if [ $? -eq 0 ] && [ "$__return" ];then
