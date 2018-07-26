@@ -43,7 +43,9 @@ function qs_get-ostype() {
 	OS=$( cat /etc/*-release \
 	| grep ^ID= |awk -F= '{print $2}'\
 	| tr -cd [:alpha:])
-
+	if [ "${OS}" == "ol" ];then
+            OS="rhel"
+        fi
         if [ $? -eq 0 ] && [ "$__return" ];then
             eval $__return="${OS}"
             return 0
@@ -143,7 +145,7 @@ function  qs_bootstrap_pip() {
     echo "[INFO] Check for python/pip"
     qs_get-python-path PYTHON_EXECUTEABLE
     if  [ $? -eq 0 ] ;then
-        command -v pip > dev/null 2&>1
+        command -v pip > /dev/null 2&>1
         if [ $? -eq 1 ]; then
             curl --silent \
              --show-error \
