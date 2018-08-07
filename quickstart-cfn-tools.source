@@ -1,6 +1,6 @@
 #!/usr/bin/bash -e
 # QuickStart Common Linux Tools
-# author: tonynv@amazon.com
+# authors: tonynv@amazon.com, andglenn@amazon.com
 #
 
 # Supported only while bootstrapping Amazon ec2:
@@ -35,6 +35,36 @@ PROGRAM='QuickStart Linux Common Tools'
 # Detects operating system type and return value
 # If no variable is passed in function will print to std-out
 #
+
+function qs_int_set_svc_executable(){
+    if [[ $(which systemctl) ]]; then
+        export qs_svc_executable="systemd"
+    else
+        export qs_svc_executable="sysvinit"
+    fi
+}
+
+function qs_int_is_svc_active(){
+    case ${qs_svc_executable} in
+        systemd)
+            systemctl is-active --quiet ${1}.service
+            ;;
+        sysvinit)
+            service ${1} status
+            ;;
+    esac
+}
+
+function qs_int_service_restart() {
+    case ${qs_svc_executable} in
+        systemd)
+            systemctl restart ${1}.service
+            ;;
+        sysvinit)
+            service ${1} restart
+            ;;
+    esac
+}
 
 function qs_get-ostype() {
     local __return=$1
@@ -163,7 +193,7 @@ function  qs_bootstrap_pip() {
 function  qs_cloudwatch_tracklog() {
     local -r __log="$@"
     cat cloudwatch_logs.stub | sed s,__LOG__,$__log,g >> /var/awslogs/etc/awslogs.conf
-    systemctl restart awslogs.service
+    qs_int_service_restart awslogs
 }
 
 function  qs_cloudwatch_install() {
@@ -179,7 +209,7 @@ function  qs_cloudwatch_install() {
     https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
     sudo $PYTHON_EXECUTEABLE ./awslogs-agent-setup.py --region $REGION -c awslogs.conf -n
     else
-      systemctl is-active --quiet awslogs.service && echo "[INFO] Cloudwatch Service is running"
+      qs_int_is_svc_active awslogs && echo "[INFO] Cloudwatch Service is running"
         exit 1
     fi
 }
