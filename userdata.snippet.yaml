@@ -1,4 +1,3 @@
-
 UserData: !Base64
   Fn::Sub:
     - |
