@@ -143,7 +143,7 @@ function  qs_bootstrap_pip() {
     echo "[INFO] Check for python/pip"
     qs_get-python-path PYTHON_EXECUTEABLE
     if  [ $? -eq 0 ] ;then
-        command -v pip > dev/null 2&>1
+        command -v pip > /dev/null 2&>1
         if [ $? -eq 1 ]; then
             curl --silent \
              --show-error \
