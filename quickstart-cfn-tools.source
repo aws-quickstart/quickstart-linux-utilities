@@ -192,7 +192,7 @@ function  qs_enable_epel() {
     if [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
-        yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        yum install -y epel-release
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         echo "Enabled!"
     else
