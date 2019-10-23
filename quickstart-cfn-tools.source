@@ -6,14 +6,15 @@
 # Supported only while bootstrapping Amazon ec2:
 #
 #  Official vendor images
-# -Red Hat Enterprise Linux 7   https://aws.amazon.com/marketplace/pp/B00KWBZVK6
-# -Centos 7                     https://aws.amazon.com/marketplace/pp/B00O7WM7QW
-# -Ubuntu 16.04 (LTS)           https://aws.amazon.com/marketplace/pp/B01JBL2M0O
-# -Amazon Linux 2016.09.1       https://aws.amazon.com/marketplace/pp/B00CIYTQTC
-# -SUSE Linux Enterprise 12     https://aws.amazon.com/marketplace/pp/B00PMM99PI
+# -Amazon Linux2        
+# -Amazon Linux 
+# -Red Hat Enterprise Linux 7   
+# -Centos 7                     
+# -Ubuntu 16.04         
+# -SUSE Linux Enterprise 12     
+#
 #  Supported Edge releases
-# -Fedora 25              https://alt.fedoraproject.org/cloud/
-# -Ubuntu 16.04           https://cloud-images.ubuntu.com/releases/14.04/14.04/
+# -Fedora 25              
 #
 
 # Configuration
@@ -31,6 +32,7 @@ PROGRAM='QuickStart Linux Common Tools'
 #   # to assign the os type to a variable OS
 #   get_os-type OS
 #
+
 
 # Detects operating system type and return value
 # If no variable is passed in function will print to std-out
@@ -240,6 +242,9 @@ function qs_aws-cfn-bootstrap() {
     echo "[INSTALL aws-cfn-bootstrap tools]"
     if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        if [ "$INSTANCE_OSTYPE" == "2" ]; then
+            export PATH=$PATH:'/opt/aws/bin'
+        fi
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
         sudo apt-get update -y
         sudo apt install python2.7 python-pip -y
@@ -257,7 +262,7 @@ function qs_aws-cfn-bootstrap() {
         exit 1
     fi
 
-    if [ $(which cfn-signal) ];then
+    if [ $(command -v cfn-signal) ];then
       echo "[FOUND] (cfn-signal)"
     else
       echo "[ERROR] (cfn-signal) not installed!!"
