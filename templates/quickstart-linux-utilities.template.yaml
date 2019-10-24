@@ -1,0 +1,298 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "CI Stack for Linux Utils"
+Metadata:
+  LICENSE: 'Apache License, Version 2.0' 
+  AUTHOR: 'Tony Vattathil'
+  EMAIL: 'tonynv@amazon.com'
+Parameters:
+  TestAMIOS:
+    AllowedValues:
+      - Amazon-Linux2-HVM
+      - Amazon-Linux-HVM
+      - CentOS-7-HVM
+      - Ubuntu-Server-14.04-LTS-HVM
+      - Ubuntu-Server-16.04-LTS-HVM
+      - SUSE-SLES-15-HVM
+    Default: Amazon-Linux2-HVM
+    Description: The Linux distribution for the AMI to be used for the bastion instances.
+    Type: String
+  AccessCIDR:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+    Description: The IP address range that can be used to access to the EC2 instance
+    MaxLength: '18'
+    MinLength: '9'
+    Type: String
+  KeyPairName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: id_rsa_aws
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair.
+  SubnetId:
+    Description: The Public subnet where the ec2 instance will be launched
+    Type: AWS::EC2::Subnet::Id
+  VPCID:
+    Description: The VPC to launch the GitHub Enterprise server
+    Type: AWS::EC2::VPC::Id
+  BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: 'replace-with-your-staging-bucket'
+    Description: >-
+      S3 bucket name for the Quick Start assets. Quick Start bucket name can
+      include numbers, lowercase letters, uppercase letters, and hyphens (-). It
+      cannot start or end with a hyphen (-).
+    Type: String
+  KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription: >-
+      Can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+    Default: aquickstart-linux-utilities/
+    Description: >-
+      S3 key prefix where assets are located should end withforward slash (/).
+    Type: String
+Mappings:
+  AWSAMIRegionMap:
+    ap-northeast-1:
+      AMZNLINUX2: ami-0ff21806645c5e492
+      AMZNLINUXHVM: ami-0ab3e16f9c414dee7
+      CENTOS7HVM: ami-045f38c93733dd48d
+      US1404HVM: ami-019f92b9a431da6ed
+      US1604HVM: ami-0cca812282dd2fc0d
+      SLES15HVM: ami-056ac8ad44e6a7e1f
+    ap-northeast-2:
+      AMZNLINUX2: ami-0d097db2fb6e0f05e
+      AMZNLINUXHVM: ami-0e1e385b0a934254a
+      CENTOS7HVM: ami-06cf2a72dadf92410
+      US1404HVM: ami-0d4d670cc80f5ffcb
+      US1604HVM: ami-0f6a0c2e905062388
+      SLES15HVM: ami-0f81fff879bafe6b8
+    ap-south-1:
+      AMZNLINUX2: ami-0cb0e70f44e1a4bb5
+      AMZNLINUXHVM: ami-02913db388613c3e1
+      CENTOS7HVM: ami-02e60be79e78fef21
+      US1404HVM: ami-04242e05c1ebface0
+      US1604HVM: ami-0a943aa1c727d4c63
+      SLES15HVM: ami-01be89269d32f2a16
+    ap-southeast-1:
+      AMZNLINUX2: ami-048a01c78f7bae4aa
+      AMZNLINUXHVM: ami-05c859630889c79c8
+      CENTOS7HVM: ami-0b4dd9d65556cac22
+      US1404HVM: ami-0e820d9e86a7efa3c
+      US1604HVM: ami-0568159dd0c65b9b6
+      SLES15HVM: ami-070356c21596ddc67
+    ap-southeast-2:
+      AMZNLINUX2: ami-03ed5bd63ba378bd8
+      AMZNLINUXHVM: ami-07cc15c3ba6f8e287
+      CENTOS7HVM: ami-08bd00d7713a39e7d
+      US1404HVM: ami-07e6faad15db3b345
+      US1604HVM: ami-05b67b91e1f703ebf
+      SLES15HVM: ami-0c4245381c67efb39
+    ca-central-1:
+      AMZNLINUX2: ami-085edf38cedbea498
+      AMZNLINUXHVM: ami-04070f04f450607dc
+      CENTOS7HVM: ami-033e6106180a626d0
+      US1404HVM: ami-08e88818d065cbc38
+      US1604HVM: ami-0b632b55517980f65
+      SLES15HVM: ami-0c97d9b588207dad6
+    eu-central-1:
+      AMZNLINUX2: ami-00aa4671cbf840d82
+      AMZNLINUXHVM: ami-010fae13a16763bb4
+      CENTOS7HVM: ami-04cf43aca3e6f3de3
+      US1404HVM: ami-067ee10914e74ffee
+      US1604HVM: ami-0fd4fe10cea7264a7
+      SLES15HVM: ami-05dfd265ea534a3e9
+    eu-north-1:
+      AMZNLINUX2: ami-1b2fa465
+      AMZNLINUXHVM: ami-6a1f9414
+      CENTOS7HVM: ami-5ee66f20
+      US1404HVM: ami-9bd55ee5
+      US1604HVM: ami-06723d9a4e8d77741
+      SLES15HVM: ami-0741fa1a008af40ad
+    eu-west-1:
+      AMZNLINUX2: ami-0ce71448843cb18a1
+      AMZNLINUXHVM: ami-028188d9b49b32a80
+      CENTOS7HVM: ami-0ff760d16d9497662
+      US1404HVM: ami-0e52b5f0b50d5c811
+      US1604HVM: ami-0c224e30f7a997d9f
+      SLES15HVM: ami-0a58a1b152ba55f1d
+    eu-west-2:
+      AMZNLINUX2: ami-00a1270ce1e007c27
+      AMZNLINUXHVM: ami-04de2b60dd25fbb2e
+      CENTOS7HVM: ami-0eab3a90fc693af19
+      US1404HVM: ami-082f73b60cd9b99b2
+      US1604HVM: ami-00b21efcf155178c4
+      SLES15HVM: ami-01497522185aaa4ee
+    eu-west-3:
+      AMZNLINUX2: ami-03b4b78aae82b30f1
+      AMZNLINUXHVM: ami-0652eb0db9b20aeaf
+      CENTOS7HVM: ami-0e1ab783dc9489f34
+      US1404HVM: ami-02931cc68ee602ff1
+      US1604HVM: ami-0220349d77ba2e87d
+      SLES15HVM: ami-0f238bd4c6fdbefb0
+    sa-east-1:
+      AMZNLINUX2: ami-0a1f49a762473adbd
+      AMZNLINUXHVM: ami-0e2c2c29d8017dd99
+      CENTOS7HVM: ami-0b8d86d4bf91850af
+      US1404HVM: ami-0e2e39cc84e09ff83
+      US1604HVM: ami-0f227e142db829b50
+      SLES15HVM: ami-0772af912976aa692
+    us-east-1:
+      AMZNLINUX2: ami-0b69ea66ff7391e80
+      AMZNLINUXHVM: ami-00eb20669e0990cb4
+      CENTOS7HVM: ami-02eac2c0129f6376b
+      US1404HVM: ami-00d4e9ff62bc40e03
+      US1604HVM: ami-092546daafcc8bc0d
+      SLES15HVM: ami-0b1764f3d7d2e2316
+    us-east-2:
+      AMZNLINUX2: ami-00c03f7f7f2ec15c3
+      AMZNLINUXHVM: ami-0c64dd618a49aeee8
+      CENTOS7HVM: ami-0f2b4fc905b0bd1f1
+      US1404HVM: ami-0c929bde1796e1484
+      US1604HVM: ami-02073f7bb66c4c56f
+      SLES15HVM: ami-05ea824317ffc0c20
+    us-west-1:
+      AMZNLINUX2: ami-0245d318c6788de52
+      AMZNLINUXHVM: ami-0bce08e823ed38bdd
+      CENTOS7HVM: ami-074e2d6769f445be5
+      US1404HVM: ami-026e9e583bf07479b
+      US1604HVM: ami-0bc498f1207abb85c
+      SLES15HVM: ami-00e34a7624e5a7107
+    us-west-2:
+      AMZNLINUX2: ami-04b762b4289fba92b
+      AMZNLINUXHVM: ami-08d489468314a58df
+      CENTOS7HVM: ami-01ed306a12b7d1c96
+      US1404HVM: ami-027386b91d3c0bf78
+      US1604HVM: ami-017e1dd35b94fb074
+      SLES15HVM: ami-0f1e3b3fb0fec0361
+  LinuxAMINameMap:
+    Amazon-Linux2-HVM:
+      Code: AMZNLINUX2
+    Amazon-Linux-HVM:
+      Code: AMZNLINUXHVM
+    CentOS-7-HVM:
+      Code: CENTOS7HVM
+    Ubuntu-Server-14.04-LTS-HVM:
+      Code: US1404HVM
+    Ubuntu-Server-16.04-LTS-HVM:
+      Code: US1604HVM
+    SUSE-SLES-15-HVM:
+      Code: SLES15HVM
+Conditions:
+  GovCloudCondition: !Equals
+    - !Ref AWS::Region
+    - us-gov-west-1
+Resources:
+  RootRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: 'sts:AssumeRole'
+            Principal:
+              Service: ec2.amazonaws.com
+            Effect: Allow
+            Sid: ''
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - 's3:GetObject'
+                Resource: !Sub 'arn:aws:s3:::${BucketName}/${KeyPrefix}*'
+                Effect: Allow
+          PolicyName: AuthenticatedS3GetObjects
+  RootInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref RootRole
+  InstanceSecurityGroup:
+    Properties:
+      GroupDescription: 'ssh access to instance'
+      SecurityGroupIngress:
+        - CidrIp: !Ref AccessCIDR
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+      VpcId: !Ref VPCID
+    Type: 'AWS::EC2::SecurityGroup'
+  LinuxInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      IamInstanceProfile: !Ref RootInstanceProfile
+      ImageId: !FindInMap 
+        - AWSAMIRegionMap
+        - !Ref 'AWS::Region'
+        - !FindInMap 
+          - LinuxAMINameMap
+          - !Ref TestAMIOS
+          - Code
+      InstanceType: t2.large
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+      SubnetId: !Ref SubnetId
+      UserData: !Base64
+          Fn::Sub: 
+          - |
+            #!/bin/bash -x
+            #cfn signaling functions
+            echo "[INFO] Start UserData in ${S3Region}";
+
+            function cfn_fail
+            {
+              cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource LinuxInstance
+              exit 1
+            }
+
+            function cfn_success
+            {
+              cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource LinuxInstance
+              exit 0
+            }
+
+            until git clone https://github.com/aws-quickstart/quickstart-linux-utilities.git ; do echo "Retrying"; done
+            cd /quickstart-linux-utilities;
+            source quickstart-cfn-tools.source;
+            qs_update-os || qs_err;
+            qs_bootstrap_pip || qs_err " pip bootstrap failed ";
+            qs_aws-cfn-bootstrap || qs_err " cfn bootstrap failed ";
+            echo "[INFO] Executing config-sets";
+            cfn-init -v --stack ${AWS::StackName} --resource LinuxInstance --configsets ec2_bootstrap --region ${AWS::Region} || cfn_fail;
+            [ $(qs_status) == 0 ] && cfn_success || cfn_fail
+          -  
+            S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
+    Metadata:
+      AWS::CloudFormation::Authentication: 
+        S3AccessCreds: 
+          type: S3
+          buckets: 
+            - !Sub ${BucketName}
+          roleName: 
+            Ref: RootRole
+      AWS::CloudFormation::Init:
+        configSets:
+          ec2_bootstrap:
+            - helloworld_cfg
+        helloworld_cfg:
+          files:
+            /tmp/bootstrap.sh:
+              source: !Sub
+                - >-
+                  https://${BucketName}.${S3Region}.amazonaws.com/${KeyPrefix}scripts/print_stdout.sh
+                - BucketName: !Ref BucketName
+                  S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, !Sub 's3.${AWS::Region}' ]
+                  KeyPrefix: !Ref KeyPrefix
+              mode: '000755'
+              owner: root
+              group: root
+              command: /tmp/bootstrap.sh 'hello world'
+              authentication: S3AccessCreds
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT15M
