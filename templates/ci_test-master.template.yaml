@@ -76,7 +76,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub 
-        - https://${BucketName}.${Region}.amazonaws.com/${KeyPrefix}templates/quickstart-linux-utilities.template.yaml
+        - https://${BucketName}.${Region}.amazonaws.com/${KeyPrefix}templates/ci_test.template.yaml
+
         - Region: !If [GovCloudCondition , s3-us-gov-west-1 , s3]
       Parameters:
         BucketName: !Ref BucketName  
@@ -95,7 +96,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub 
-        - https://${BucketName}.${Region}.amazonaws.com/${KeyPrefix}templates/quickstart-linux-utilities.template.yaml
+        - https://${BucketName}.${Region}.amazonaws.com/${KeyPrefix}templates/ci_test.template.yaml
         - Region: !If [GovCloudCondition , s3-us-gov-west-1 , s3]
       Parameters:
         BucketName: !Ref BucketName  
