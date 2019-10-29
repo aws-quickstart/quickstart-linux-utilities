@@ -262,7 +262,7 @@ function qs_aws-cfn-bootstrap() {
         exit 1
     fi
 
-    if [ $(command -v cfn-signal) ];then
+    if [ $(which cfn-signal) ];then
       echo "[FOUND] (cfn-signal)"
     else
       echo "[ERROR] (cfn-signal) not installed!!"
