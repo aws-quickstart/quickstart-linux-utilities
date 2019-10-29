@@ -243,7 +243,8 @@ function qs_aws-cfn-bootstrap() {
     if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
         if [ "$INSTANCE_OSTYPE" == "2" ]; then
-            export PATH=$PATH:'/opt/aws/bin'
+            ln -s  /opt/aws/bin/cfn-* /usr/bin/
+
         fi
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
         sudo apt-get update -y
