@@ -8,6 +8,10 @@
         "ParameterValue": "0.0.0.0/0"
     },
     {
+        "ParameterKey":"GitRepo",
+        "ParameterValue":"https://github.com/username/quickstart-linux-utilities.git"
+    },
+    {
         "ParameterKey": "AvailabilityZones",
         "ParameterValue": "$[taskcat_getaz_2]"
     },

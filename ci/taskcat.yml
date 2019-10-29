@@ -17,7 +17,7 @@ global:
   reporting: true
 tests:
   linux-utils:
-    parameter_input: quickstart-linux-utilities-amzn-linux2.json
+    parameter_input: quickstart-linux-utilities.json
     template_file: ci_test-master.template.yaml 
     regions: 
       - us-east-1

@@ -42,6 +42,12 @@ Parameters:
     Default: aws-quickstart
     Description: "S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: String
+  GitRepo:
+    Default: https://github.com/aws-quickstart/quickstart-linux-utilities.git
+    Type: String
+  GitBranch:
+    Default: develop
+    Type: String
   KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -84,6 +90,8 @@ Resources:
         KeyPairName: !Ref KeyPairName
         AccessCIDR: !Ref AccessCIDR
         TestAMIOS: 'Amazon-Linux-HVM'
+        GitRepo: !Ref GitRepo
+        GitBranch: !Ref GitBranch
         SubnetId:
           Fn::GetAtt:
           - VPCStack
@@ -102,6 +110,8 @@ Resources:
         BucketName: !Ref BucketName  
         KeyPairName: !Ref KeyPairName
         AccessCIDR: !Ref AccessCIDR
+        GitRepo: !Ref GitRepo
+        GitBranch: !Ref GitBranch
         TestAMIOS: 'Amazon-Linux2-HVM'
         SubnetId:
           Fn::GetAtt:

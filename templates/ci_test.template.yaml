@@ -53,6 +53,12 @@ Parameters:
     Description: >-
       S3 key prefix where assets are located should end withforward slash (/).
     Type: String
+  GitRepo:
+    Default: https://github.com/aws-quickstart/quickstart-linux-utilities.git
+    Type: String
+  GitBranch:
+    Default: develop
+    Type: String
 Mappings:
   AWSAMIRegionMap:
     ap-northeast-1:
@@ -256,7 +262,7 @@ Resources:
               exit 0
             }
 
-            until git clone https://github.com/aws-quickstart/quickstart-linux-utilities.git ; do echo "Retrying"; done
+            until git clone -b ${GitBranch} ${GitRepo} ; do echo "Retrying"; done
             cd /quickstart-linux-utilities;
             source quickstart-cfn-tools.source;
             qs_update-os || qs_err;
