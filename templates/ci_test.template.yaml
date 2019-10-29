@@ -49,7 +49,7 @@ Parameters:
     AllowedPattern: '^[0-9a-zA-Z-/]*$'
     ConstraintDescription: >-
       Can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
-    Default: aquickstart-linux-utilities/
+    Default: quickstart-linux-utilities/
     Description: >-
       S3 key prefix where assets are located should end withforward slash (/).
     Type: String

@@ -240,12 +240,16 @@ function qs_aws-cfn-bootstrap() {
     qs_get-osversion INSTANCE_OSVERSION
 
     echo "[INSTALL aws-cfn-bootstrap tools]"
-    if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
-        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-        if [ "$INSTANCE_OSTYPE" == "2" ]; then
-            ln -s  /opt/aws/bin/cfn-* /usr/bin/
-
-        fi
+    if [ "$INSTANCE_OSTYPE" == "amzn" ] && [ "$INSTANCE_OSVERSION" == "2" ]; then
+            echo "Add /opt/aws/bin to PATH"
+            cp scripts/opt-aws.sh /etc/profile.d/
+            sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
+            export PATH=$PATH:/opt/aws/bin
+    elif [ "$INSTANCE_OSTYPE" == "amzn" ] && [ "$INSTANCE_OSVERSION" != "2" ]; then
+            echo "Add /opt/aws/bin to PATH"
+            cp scripts/opt-aws.sh /etc/profile.d/
+            sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
+            export PATH=$PATH:/opt/aws/bin
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
         sudo apt-get update -y
         sudo apt install python2.7 python-pip -y
