@@ -242,6 +242,7 @@ Resources:
             #!/bin/bash -x
             #cfn signaling functions
             echo "[INFO] Start UserData in ${S3Region}";
+            yum install git -y
 
             function cfn_fail
             {
