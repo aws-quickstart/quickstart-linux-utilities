@@ -121,27 +121,6 @@ Resources:
           Fn::GetAtt:
           - VPCStack
           - Outputs.VPCID
-  Ubuntu14:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub 
-        - https://${BucketName}.${Region}.amazonaws.com/${KeyPrefix}templates/ci_test.template.yaml
-        - Region: !If [GovCloudCondition , s3-us-gov-west-1 , s3]
-      Parameters:
-        BucketName: !Ref BucketName  
-        KeyPairName: !Ref KeyPairName
-        AccessCIDR: !Ref AccessCIDR
-        GitRepo: !Ref GitRepo
-        GitBranch: !Ref GitBranch
-        TestAMIOS: 'Ubuntu-Server-14.04-LTS-HVM'
-        SubnetId:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PublicSubnet1ID
-        VPCID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.VPCID
   Ubuntu16:
     Type: AWS::CloudFormation::Stack
     Properties:
