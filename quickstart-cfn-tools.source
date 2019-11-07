@@ -249,6 +249,10 @@ function qs_aws-cfn-bootstrap() {
     elif [ "$INSTANCE_OSTYPE" == "amzn" ]; then
             yum install python36-pip
             alternatives --set python /usr/bin/python3.6
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "16.04" ]; then
+        sudo apt-get update -y
+        sudo apt install python2.7 python-pip -y
+        pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
         sudo apt-get update -y
         sudo apt install python2.7 python-pip -y
