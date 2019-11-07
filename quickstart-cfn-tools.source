@@ -242,20 +242,30 @@ function qs_aws-cfn-bootstrap() {
 
     echo "[INSTALL aws-cfn-bootstrap tools]"
     if [ "$INSTANCE_OSTYPE" == "amzn" ] && [ "$INSTANCE_OSVERSION" == "2" ]; then
-            echo "Add /opt/aws/bin to PATH"
-            cp scripts/opt-aws.sh /etc/profile.d/
+            sudo cp scripts/opt-aws.sh /etc/profile.d/
             sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
             export PATH=$PATH:/opt/aws/bin
+            sudo  yum install python3-pip
+            sudo yum install python3-pip
+            sudo alternatives --set python /usr/bin/python3
     elif [ "$INSTANCE_OSTYPE" == "amzn" ]; then
-            yum install python36-pip
-            alternatives --set python /usr/bin/python3.6
+            sudo cp scripts/opt-aws.sh /etc/profile.d/
+            sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
+            export PATH=$PATH:/opt/aws/bin
+            sudo  yum install python3-pip
+            sudo yum install python36-pip
+            sudo alternatives --set python /usr/bin/python3.6
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "16.04" ]; then
         sudo apt-get update -y
-        sudo apt install python2.7 python-pip -y
+        sudo apt-get install python2.7 python-pip -y
+        pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "18.04" ]; then
+        sudo apt-get update -y
+        sudo apt-get install python2.7 python-pip -y
         pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
         sudo apt-get update -y
-        sudo apt install python2.7 python-pip -y
+        sudo apt-get install python2.7 python-pip -y
         pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
