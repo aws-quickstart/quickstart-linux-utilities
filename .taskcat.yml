@@ -17,14 +17,11 @@ project:
   - us-west-2
   s3_bucket: ''
 tests:
-  linux-utils:
+  Amazon-Linux2:
     parameters:
       AccessCIDR: 0.0.0.0/0
       AvailabilityZones: $[taskcat_getaz_2]
       BucketName: $[taskcat_autobucket]
       GitRepo: https://github.com/username/quickstart-linux-utilities.git
-      KeyPairName: default
-    regions:
-    - us-east-1
-    s3_bucket: ''
+      TestAMIOS: Amazon-Linux2-HVM
     template: templates/ci_test-master.template.yaml
