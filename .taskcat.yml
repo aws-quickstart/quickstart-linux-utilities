@@ -33,11 +33,19 @@ tests:
       GitRepo: https://github.com/username/quickstart-linux-utilities.git
       TestAMIOS: Amazon-Linux-HVM
     template: templates/ci_test-master.template.yaml
-  Ubuntu16:
+  Ubuntu1604:
     parameters:
       AccessCIDR: 0.0.0.0/0
       AvailabilityZones: $[taskcat_getaz_2]
       BucketName: $[taskcat_autobucket]
       GitRepo: https://github.com/username/quickstart-linux-utilities.git
       TestAMIOS: Ubuntu-Server-16.04-LTS-HVM
+    template: templates/ci_test-master.template.yaml
+  Ubuntu1804:
+    parameters:
+      AccessCIDR: 0.0.0.0/0
+      AvailabilityZones: $[taskcat_getaz_2]
+      BucketName: $[taskcat_autobucket]
+      GitRepo: https://github.com/username/quickstart-linux-utilities.git
+      TestAMIOS: Ubuntu-Server-18.04-LTS-HVM
     template: templates/ci_test-master.template.yaml
