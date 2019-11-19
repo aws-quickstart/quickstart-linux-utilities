@@ -24,8 +24,6 @@ tests:
       GitRepo: https://github.com/username/quickstart-linux-utilities.git
       TestAMIOS: Amazon-Linux2-HVM
     template: templates/ci_test-master.template.yaml
-    regions:
-    - us-east-1
   Amazon-Linux1:
     parameters:
       AccessCIDR: 0.0.0.0/0
@@ -34,8 +32,6 @@ tests:
       GitRepo: https://github.com/username/quickstart-linux-utilities.git
       TestAMIOS: Amazon-Linux-HVM
     template: templates/ci_test-master.template.yaml
-    regions:
-    - us-east-2
   Ubuntu1604:
     parameters:
       AccessCIDR: 0.0.0.0/0
@@ -44,5 +40,3 @@ tests:
       GitRepo: https://github.com/username/quickstart-linux-utilities.git
       TestAMIOS: Ubuntu-Server-16.04-LTS-HVM
     template: templates/ci_test-master.template.yaml
-    regions:
-    - us-east-1
