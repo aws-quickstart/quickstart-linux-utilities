@@ -46,13 +46,3 @@ tests:
     template: templates/ci_test-master.template.yaml
     regions:
     - us-east-1
-  Ubuntu1804:
-    parameters:
-      AccessCIDR: 0.0.0.0/0
-      AvailabilityZones: $[taskcat_getaz_2]
-      BucketName: $[taskcat_autobucket]
-      GitRepo: https://github.com/username/quickstart-linux-utilities.git
-      TestAMIOS: Ubuntu-Server-18.04-LTS-HVM
-    template: templates/ci_test-master.template.yaml
-    regions:
-    - us-east-2
