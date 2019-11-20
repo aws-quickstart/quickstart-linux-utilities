@@ -1,24 +1,23 @@
 #!/usr/bin/bash -e
-# QuickStart Common Linux Tools
-# author: tonynv@amazon.com
+# AWS Reference Common Linux Tools
+# authors: tonynv@amazon.com, andglenn@amazon.com
 #
 
 # Supported only while bootstrapping Amazon ec2:
 #
-#  Official vendor images
-# -Red Hat Enterprise Linux 7   https://aws.amazon.com/marketplace/pp/B00KWBZVK6
-# -Centos 7                     https://aws.amazon.com/marketplace/pp/B00O7WM7QW
-# -Ubuntu 16.04 (LTS)           https://aws.amazon.com/marketplace/pp/B01JBL2M0O
-# -Amazon Linux 2016.09.1       https://aws.amazon.com/marketplace/pp/B00CIYTQTC
-# -SUSE Linux Enterprise 12     https://aws.amazon.com/marketplace/pp/B00PMM99PI
-#  Supported Edge releases
-# -Fedora 25              https://alt.fedoraproject.org/cloud/
-# -Ubuntu 16.04           https://cloud-images.ubuntu.com/releases/14.04/14.04/
+# -Amazon Linux2        
+# -Red Hat Enterprise Linux 7   
+# -Ubuntu 18.04         
+# -SUSE Linux Enterprise 12     
+#
+# -Centos 7  (no ci tests)                   
+# -Fedora 25 (no ci tests)            
+#  Deprecated 14.04 (no future support)
 #
 
 # Configuration
 #
-PROGRAM='QuickStart Linux Common Tools'
+PROGRAM='AWS Reference Linux Common Tools'
 
 # Usage
 #
@@ -32,9 +31,40 @@ PROGRAM='QuickStart Linux Common Tools'
 #   get_os-type OS
 #
 
+
 # Detects operating system type and return value
 # If no variable is passed in function will print to std-out
 #
+
+function qs_int_set_svc_executable(){
+    if [[ $(which systemctl) ]]; then
+        export qs_svc_executable="systemd"
+    else
+        export qs_svc_executable="sysvinit"
+    fi
+}
+
+function qs_int_is_svc_active(){
+    case ${qs_svc_executable} in
+        systemd)
+            systemctl is-active --quiet ${1}.service
+            ;;
+        sysvinit)
+            service ${1} status
+            ;;
+    esac
+}
+
+function qs_int_service_restart() {
+    case ${qs_svc_executable} in
+        systemd)
+            systemctl restart ${1}.service
+            ;;
+        sysvinit)
+            service ${1} restart
+            ;;
+    esac
+}
 
 function qs_get-ostype() {
     local __return=$1
@@ -43,7 +73,9 @@ function qs_get-ostype() {
 	OS=$( cat /etc/*-release \
 	| grep ^ID= |awk -F= '{print $2}'\
 	| tr -cd [:alpha:])
-
+        if [ "${OS}" == "ol" ];then
+            OS="rhel"
+        fi
         if [ $? -eq 0 ] && [ "$__return" ];then
             eval $__return="${OS}"
             return 0
@@ -161,7 +193,7 @@ function  qs_bootstrap_pip() {
 function  qs_cloudwatch_tracklog() {
     local -r __log="$@"
     cat cloudwatch_logs.stub | sed s,__LOG__,$__log,g >> /var/awslogs/etc/awslogs.conf
-    systemctl restart awslogs.service
+    qs_int_service_restart awslogs
 }
 
 function  qs_cloudwatch_install() {
@@ -177,7 +209,7 @@ function  qs_cloudwatch_install() {
     https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
     sudo $PYTHON_EXECUTEABLE ./awslogs-agent-setup.py --region $REGION -c awslogs.conf -n
     else
-      systemctl is-active --quiet awslogs.service && echo "[INFO] Cloudwatch Service is running"
+      qs_int_is_svc_active awslogs && echo "[INFO] Cloudwatch Service is running"
         exit 1
     fi
 }
@@ -238,15 +270,39 @@ function qs_aws-cfn-bootstrap() {
     qs_get-osversion INSTANCE_OSVERSION
 
     echo "[INSTALL aws-cfn-bootstrap tools]"
-    if [ "$INSTANCE_OSTYPE" == "amzn" ]; then
-        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ]; then
+    if [ "$INSTANCE_OSTYPE" == "amzn" ] && [ "$INSTANCE_OSVERSION" == "2" ]; then
+            sudo cp scripts/opt-aws.sh /etc/profile.d/
+            sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
+            export PATH=$PATH:/opt/aws/bin
+            sudo  yum install python3-pip
+            sudo yum install python3-pip
+            sudo alternatives --set python /usr/bin/python3
+    elif [ "$INSTANCE_OSTYPE" == "amzn" ]; then
+            echo "Warning: Consider upgrading to Amazon Linux 2"
+            sudo cp scripts/opt-aws.sh /etc/profile.d/
+            sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
+            export PATH=$PATH:/opt/aws/bin
+            sudo  yum install python3-pip
+            sudo yum install python36-pip
+            sudo alternatives --set python /usr/bin/python3.6
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "16.04" ]; then
         sudo apt-get update -y
-        sudo apt install python2.7 python-pip -y
-        pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        sudo apt-get install python2.7 python-pip -y
+        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "18.04" ]; then
+        sudo apt-get update -y
+        sudo apt-get install python2.7 python-pip -y
+        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "14.04" ]; then
+        echo "Warning: ubuntu 14.04 will be deprecated in the next release"
+        sudo apt-get update -y
+        sudo apt-get install python2.7 python-pip -y
+        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
+        yum update -y
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
+        yum update -y
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
