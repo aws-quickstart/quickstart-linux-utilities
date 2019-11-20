@@ -16,7 +16,7 @@ global:
     - us-west-2
   reporting: true
 tests:
-  ubuntu16:
+  ubuntu18:
     parameter_input: ubuntu.json
     template_file: ci_test-master.template.yaml 
   centos7:

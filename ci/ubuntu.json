@@ -12,7 +12,7 @@
 },
 {
    "ParameterKey": "KeyPairName", 
-   "ParameterValue": "tonynv"
+   "ParameterValue": "cikey"
 },
 {
    "ParameterKey": "GitRepo", 
@@ -20,5 +20,5 @@
 },
 {
    "ParameterKey": "TestAMIOS", 
-   "ParameterValue": "Ubuntu-Server-16.04-LTS-HVM"
+   "ParameterValue": "Ubuntu-Server-18.04-LTS-HVM"
 }]
