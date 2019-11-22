@@ -291,7 +291,7 @@ function qs_aws-cfn-bootstrap() {
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "18.04" ]; then
         sudo apt-get update -y
-        #sudo apt-get install python2.7 python-pip -y
+        sudo apt-get install python-pip -y
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "14.04" ]; then
         echo "Warning: ubuntu 14.04 will be deprecated in the next release"
