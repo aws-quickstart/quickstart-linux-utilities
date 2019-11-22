@@ -33,7 +33,7 @@ Parameters:
     Description: The Public subnet where the ec2 instance will be launched
     Type: AWS::EC2::Subnet::Id
   VPCID:
-    Description: The VPC to launch the GitHub Enterprise server
+    Description: VPC 1D
     Type: AWS::EC2::VPC::Id
   BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
