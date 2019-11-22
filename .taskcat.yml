@@ -1,7 +1,6 @@
 project:
   name: quickstart-linux-utilities
-  owner: tonynv@amazon.com
-  package_lambda: false
+   owner: tonynv@amazon.com
   regions:
   - ap-northeast-1
   - ap-northeast-2
