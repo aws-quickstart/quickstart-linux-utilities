@@ -1,4 +1,5 @@
 global:
+  govcloud: true
   owner: tonynv@amazon.com
   qsname: quickstart-linux-utilities
   regions:
