@@ -256,7 +256,7 @@ function qs_update-os() {
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         dnf update -y
     elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
-        zypper refresh && zypper update
+        zypper -n refresh && zypper -n update
     else
         exit 1
     fi
@@ -308,7 +308,9 @@ function qs_aws-cfn-bootstrap() {
     elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
-        zypper refresh && zypper update
+        zypper -n refresh && zypper -n update
+        zypper -n install python2-pip
+        pip2.7 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
         echo "[WARNING] not implemeneted"
     else
         exit 1
@@ -400,7 +402,7 @@ elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && dnf clean && dnf install curl -y || return 0
 
 elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
-    check_cmd curl;[[ $? -eq 1 ]] && zypper refresh && zypper install curl -y || return 0
+    check_cmd curl;[[ $? -eq 1 ]] && zypper -n refresh && zypper -n install curl || return 0
 else
     echo "[FAIL] : Dependencies not satisfied!"
     exit 1
