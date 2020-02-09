@@ -149,7 +149,7 @@ Mappings:
     us-east-1:
       AMZNLINUX2: ami-062f7200baf2fa504
       AMZNLINUXHVM: ami-09d069a04349dc3cb
-      CENTOS7HVM: ami-02eac2c0129f6376b
+      CENTOS7HVM: ami-9887c6e7
       US1604HVM: ami-08bc77a2c7eb2b1da
       US1804HVM: ami-046842448f9e74e7d
       SLES15HVM: ami-0b1764f3d7d2e2316
