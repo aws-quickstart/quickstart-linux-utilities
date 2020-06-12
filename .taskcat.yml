@@ -20,6 +20,7 @@ tests:
       AccessCIDR: 0.0.0.0/0
       AvailabilityZones: $[taskcat_getaz_2]
       BucketName: $[taskcat_autobucket]
+      BucketRegion: $[taskcat_current_region]
       GitRepo: https://github.com/aws-quickstart/quickstart-linux-utilities.git
       KeyPairName: cikey
       TestAMIOS: Ubuntu-Server-18.04-LTS-HVM
@@ -31,6 +32,7 @@ tests:
       AccessCIDR: 0.0.0.0/0
       AvailabilityZones: $[taskcat_getaz_2]
       BucketName: $[taskcat_autobucket]
+      BucketRegion: $[taskcat_current_region]
       GitRepo: https://github.com/aws-quickstart/quickstart-linux-utilities.git
       KeyPairName: cikey
       TestAMIOS: Amazon-Linux2-HVM
@@ -42,6 +44,7 @@ tests:
           AccessCIDR: 0.0.0.0/0
           AvailabilityZones: $[taskcat_getaz_2]
           BucketName: $[taskcat_autobucket]
+          BucketRegion: $[taskcat_current_region]
           GitRepo: https://github.com/aws-quickstart/quickstart-linux-utilities.git
           KeyPairName: cikey
           TestAMIOS: CentOS-7-HVM
