@@ -46,6 +46,10 @@ Parameters:
       include numbers, lowercase letters, uppercase letters, and hyphens (-). It
       cannot start or end with a hyphen (-).
     Type: String
+  BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Type: String
   KeyPrefix:
     AllowedPattern: '^[0-9a-zA-Z-/]*$'
     ConstraintDescription: >-
@@ -191,6 +195,7 @@ Conditions:
   GovCloudCondition: !Equals
     - !Ref AWS::Region
     - us-gov-west-1
+  UsingDefaultBucket: !Equals [!Ref BucketName, 'aws-quickstart']
 Resources:
   RootRole:
     Type: AWS::IAM::Role
@@ -208,7 +213,9 @@ Resources:
             Statement:
               - Action:
                   - 's3:GetObject'
-                Resource: !Sub 'arn:aws:s3:::${BucketName}/${KeyPrefix}*'
+                Resource: !Sub
+                  - arn:${AWS::Partition}:s3:::${S3Bucket}/${KeyPrefix}*
+                  - S3Bucket: !If [UsingDefaultBucket, !Sub '${BucketName}-${AWS::Region}', !Ref BucketName]
                 Effect: Allow
           PolicyName: AuthenticatedS3GetObjects
   RootInstanceProfile:
@@ -279,8 +286,7 @@ Resources:
       AWS::CloudFormation::Authentication: 
         S3AccessCreds: 
           type: S3
-          buckets: 
-            - !Sub ${BucketName}
+          buckets: !If [UsingDefaultBucket, !Sub '${BucketName}-${AWS::Region}', !Ref BucketName]
           roleName: 
             Ref: RootRole
       AWS::CloudFormation::Init:
@@ -295,9 +301,9 @@ Resources:
             /tmp/bootstrap.sh:
               source: !Sub
                 - >-
-                  https://${BucketName}.${S3Region}.amazonaws.com/${KeyPrefix}scripts/print_stdout.sh
-                - BucketName: !Ref BucketName
-                  S3Region: !If [ GovCloudCondition, s3-us-gov-west-1, s3 ]
+                  https://${S3Bucket}.${S3Region}.amazonaws.com/${KeyPrefix}scripts/print_stdout.sh
+                - S3Bucket: !If [UsingDefaultBucket, !Sub '${BucketName}-${AWS::Region}', !Ref BucketName]
+                  S3Region: !Ref AWS::Region
                   KeyPrefix: !Ref KeyPrefix
               mode: '000755'
               owner: root
