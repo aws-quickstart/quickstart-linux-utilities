@@ -274,16 +274,14 @@ function qs_aws-cfn-bootstrap() {
             sudo cp scripts/opt-aws.sh /etc/profile.d/
             sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
             export PATH=$PATH:/opt/aws/bin
-            sudo  yum install python3-pip
-            sudo yum install python3-pip
+            sudo yum install -y python3-pip
             sudo alternatives --set python /usr/bin/python3
     elif [ "$INSTANCE_OSTYPE" == "amzn" ]; then
             echo "Warning: Consider upgrading to Amazon Linux 2"
             sudo cp scripts/opt-aws.sh /etc/profile.d/
             sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
             export PATH=$PATH:/opt/aws/bin
-            sudo  yum install python3-pip
-            sudo yum install python36-pip
+            sudo yum install -y python36-pip
             sudo alternatives --set python /usr/bin/python3.6
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "16.04" ]; then
         sudo apt-get update -y
