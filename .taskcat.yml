@@ -27,6 +27,18 @@ tests:
     regions:
     - us-east-2
     template: templates/ci_test-master.template.yaml
+  ubuntu20:
+    parameters:
+      AccessCIDR: 0.0.0.0/0
+      AvailabilityZones: $[taskcat_getaz_2]
+      BucketName: $[taskcat_autobucket]
+      BucketRegion: $[taskcat_current_region]
+      GitRepo: https://github.com/aws-quickstart/quickstart-linux-utilities.git
+      KeyPairName: cikey
+      TestAMIOS: Ubuntu-Server-20.04-LTS-HVM
+    regions:
+    - us-east-2
+    template: templates/ci_test-master.template.yaml
   amzn2:
     parameters:
       AccessCIDR: 0.0.0.0/0

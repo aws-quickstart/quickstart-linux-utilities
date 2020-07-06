@@ -10,6 +10,7 @@
 # -Ubuntu 18.04         
 # -SUSE Linux Enterprise 12     
 #
+# -Ubuntu 20.04 (no ci tests)
 # -Centos 7  (no ci tests)                   
 # -Fedora 25 (no ci tests)            
 #  Deprecated 14.04 (no future support)
@@ -288,6 +289,10 @@ function qs_aws-cfn-bootstrap() {
         sudo apt-get install python2.7 python-pip -y
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "18.04" ]; then
+        sudo apt-get update -y
+        sudo apt-get install python-pip -y
+        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "20.04" ]; then
         sudo apt-get update -y
         sudo apt-get install python-pip -y
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz

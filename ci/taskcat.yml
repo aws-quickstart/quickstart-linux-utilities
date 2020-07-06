@@ -17,6 +17,9 @@ global:
     - us-west-2
   reporting: true
 tests:
+  ubuntu20:
+    parameter_input: ubuntu20.json
+    template_file: ci_test-master.template.yaml 
   ubuntu18:
     parameter_input: ubuntu.json
     template_file: ci_test-master.template.yaml 

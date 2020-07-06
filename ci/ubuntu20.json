@@ -1,0 +1,24 @@
+[{
+   "ParameterKey":"AccessCIDR",
+   "ParameterValue": "0.0.0.0/0"
+},
+{
+   "ParameterKey": "AvailabilityZones", 
+   "ParameterValue": "$[taskcat_getaz_2]"
+},
+{
+   "ParameterKey": "BucketName", 
+   "ParameterValue": "$[taskcat_autobucket]"
+},
+{
+   "ParameterKey": "KeyPairName", 
+   "ParameterValue": "cikey"
+},
+{
+   "ParameterKey": "GitRepo", 
+   "ParameterValue": "https://github.com/aws-quickstart/quickstart-linux-utilities.git"
+},
+{
+   "ParameterKey": "TestAMIOS", 
+   "ParameterValue": "Ubuntu-Server-20.04-LTS-HVM"
+}]
