@@ -8,9 +8,9 @@
 # -Amazon Linux2        
 # -Red Hat Enterprise Linux 7   
 # -Ubuntu 18.04         
+# -Ubuntu 20.04
 # -SUSE Linux Enterprise 12     
 #
-# -Ubuntu 20.04 (no ci tests)
 # -Centos 7  (no ci tests)                   
 # -Fedora 25 (no ci tests)            
 #  Deprecated 14.04 (no future support)
