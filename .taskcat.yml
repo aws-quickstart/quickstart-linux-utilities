@@ -51,15 +51,15 @@ tests:
     regions:
     - us-east-2
     template: templates/ci_test-master.template.yaml
-      centos7:
-        parameters:
-          AccessCIDR: 0.0.0.0/0
-          AvailabilityZones: $[taskcat_getaz_2]
-          BucketName: $[taskcat_autobucket]
-          BucketRegion: $[taskcat_current_region]
-          GitRepo: https://github.com/aws-quickstart/quickstart-linux-utilities.git
-          KeyPairName: cikey
-          TestAMIOS: CentOS-7-HVM
-        regions:
-        - us-east-2
-        template: templates/ci_test-master.template.yaml
+  centos7:
+    parameters:
+      AccessCIDR: 0.0.0.0/0
+      AvailabilityZones: $[taskcat_getaz_2]
+      BucketName: $[taskcat_autobucket]
+      BucketRegion: $[taskcat_current_region]
+      GitRepo: https://github.com/aws-quickstart/quickstart-linux-utilities.git
+      KeyPairName: cikey
+      TestAMIOS: CentOS-7-HVM
+    regions:
+    - us-east-2
+    template: templates/ci_test-master.template.yaml
