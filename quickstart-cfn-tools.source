@@ -8,6 +8,7 @@
 # -Amazon Linux2        
 # -Red Hat Enterprise Linux 7   
 # -Ubuntu 18.04         
+# -Ubuntu 20.04
 # -SUSE Linux Enterprise 12     
 #
 # -Centos 7  (no ci tests)                   
@@ -290,6 +291,12 @@ function qs_aws-cfn-bootstrap() {
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "18.04" ]; then
         sudo apt-get update -y
         sudo apt-get install python-pip -y
+        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "20.04" ]; then
+        sudo apt-get update -y
+        apt-get install python2.7 -y
+        curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
+        sudo python2.7 get-pip.py
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "14.04" ]; then
         echo "Warning: ubuntu 14.04 will be deprecated in the next release"
