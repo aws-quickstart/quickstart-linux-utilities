@@ -110,6 +110,7 @@ Resources:
               - !Ref 'BucketRegion'
       Parameters:
         BucketName: !Ref BucketName
+        BucketRegion: !Ref BucketRegion
         KeyPairName: !Ref KeyPairName
         AccessCIDR: !Ref AccessCIDR
         TestAMIOS: !Ref TestAMIOS
