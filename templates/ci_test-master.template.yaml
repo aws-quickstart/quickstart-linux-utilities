@@ -79,8 +79,14 @@ Resources:
       TemplateURL:
         !Sub
           - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${BucketName}-${AWS::Region}', !Ref BucketName]
+          - S3Bucket: !If
+              - UsingDefaultBucket
+              - !Sub 'aws-quickstart-${AWS::Region}'
+              - !Ref 'BucketName'
+            S3Region: !If
+              - UsingDefaultBucket
+              - !Ref 'AWS::Region'
+              - !Ref 'BucketRegion'
       Parameters:
         AvailabilityZones: !Join 
           - ','
@@ -96,8 +102,14 @@ Resources:
       TemplateURL:
         !Sub
           - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${KeyPrefix}templates/ci_test.template.yaml
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${BucketName}-${AWS::Region}', !Ref BucketName]
+          - S3Bucket: !If
+              - UsingDefaultBucket
+              - !Sub 'aws-quickstart-${AWS::Region}'
+              - !Ref 'BucketName'
+            S3Region: !If
+              - UsingDefaultBucket
+              - !Ref 'AWS::Region'
+              - !Ref 'BucketRegion'
       Parameters:
         BucketName: !Ref BucketName
         KeyPairName: !Ref KeyPairName
