@@ -7,13 +7,8 @@
 #
 # -Amazon Linux2        
 # -Red Hat Enterprise Linux 7   
-# -Ubuntu 18.04         
 # -Ubuntu 20.04
-# -SUSE Linux Enterprise 12     
 #
-# -Centos 7  (no ci tests)                   
-# -Fedora 25 (no ci tests)            
-#  Deprecated 14.04 (no future support)
 #
 
 # Configuration
@@ -278,17 +273,19 @@ function qs_aws-cfn-bootstrap() {
             sudo yum install -y python3-pip
             sudo alternatives --set python /usr/bin/python3
     elif [ "$INSTANCE_OSTYPE" == "amzn" ]; then
-            echo "Warning: Consider upgrading to Amazon Linux 2"
+            echo "Warning: Support for this OS Version is deprecated - Consider upgrading to Amazon Linux 2"
             sudo cp scripts/opt-aws.sh /etc/profile.d/
             sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
             export PATH=$PATH:/opt/aws/bin
             sudo yum install -y python36-pip
             sudo alternatives --set python /usr/bin/python3.6
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "16.04" ]; then
+        echo "Warning: Support for this OS Version is deprecated - Consider upgrading to 20.04"
         sudo apt-get update -y
         sudo apt-get install python2.7 python-pip -y
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "18.04" ]; then
+        echo "Warning: Support for this OS Version is deprecated - Consider upgrading to 20.04"
         sudo apt-get update -y
         sudo apt-get install python-pip -y
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
@@ -297,11 +294,6 @@ function qs_aws-cfn-bootstrap() {
         apt-get install python2.7 -y
         curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
         sudo python2.7 get-pip.py
-        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-    elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "14.04" ]; then
-        echo "Warning: ubuntu 14.04 will be deprecated in the next release"
-        sudo apt-get update -y
-        sudo apt-get install python2.7 python-pip -y
         sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         yum update -y
