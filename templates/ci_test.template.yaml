@@ -54,7 +54,6 @@ Parameters:
       S3 key prefix where assets are located should end withforward slash (/).
     Type: String
   BucketRegion:
-    Default: 'us-east-1'
     Description: The AWS Region where the is hosted. When using your own bucket, you must specify this value.
     Type: String
   GitRepo:
