@@ -199,7 +199,8 @@ Resources:
         Statement:
           - Action: 'sts:AssumeRole'
             Principal:
-              Service: ec2.amazonaws.com
+              Service: 
+                - !Sub 'ec2.${AWS::URLSuffix}'
             Effect: Allow
             Sid: ''
       Policies:
@@ -243,38 +244,38 @@ Resources:
           - LinuxAMINameMap
           - !Ref TestAMIOS
           - Code
-      InstanceType: t2.large
+      InstanceType: t3.micro
       KeyName: !Ref KeyPairName
       SecurityGroupIds:
         - !Ref InstanceSecurityGroup
       SubnetId: !Ref SubnetId
-      UserData: !Base64
-          Fn::Sub:  
-            #!/bin/bash -x
-            #cfn signaling functions
-            yum install git -y || apt-get install -y git
+      UserData: 
+        Fn::Base64: !Sub |
+          #!/bin/bash -ex
+          yum install git -y || apt-get install -y git
 
-            function cfn_fail
-            {
-              cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource LinuxInstance
-              exit 1
-            }
+          #cfn signaling functions
+          function cfn_fail
+          {
+            cfn-signal -e 1 --stack ${AWS::StackName} --region ${AWS::Region} --resource LinuxInstance
+            exit 1
+          }
 
-            function cfn_success
-            {
-              cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource LinuxInstance
-              exit 0
-            }
+          function cfn_success
+          {
+            cfn-signal -e 0 --stack ${AWS::StackName} --region ${AWS::Region} --resource LinuxInstance
+            exit 0
+          }
 
-            until git clone -b ${GitBranch} ${GitRepo} ; do echo "Retrying"; done
-            cd /quickstart-linux-utilities;
-            source quickstart-cfn-tools.source;
-            qs_update-os || qs_err;
-            qs_aws-cfn-bootstrap || qs_err " cfn bootstrap failed ";
-            echo "[INFO] Executing config-sets";
-            cfn-init -v --stack ${AWS::StackName} --resource LinuxInstance --configsets ec2_bootstrap --region ${AWS::Region} || cfn_fail;
-            qs_status;
-            [ $(qs_status) == 0 ] && cfn_success || cfn_fail "signaled"
+          until git clone -b ${GitBranch} ${GitRepo} ; do echo "Retrying"; done
+          cd /quickstart-linux-utilities;
+          source quickstart-cfn-tools.source;
+          qs_update-os || qs_err;
+          qs_aws-cfn-bootstrap || qs_err " cfn bootstrap failed ";
+          echo "[INFO] Executing config-sets";
+          cfn-init -v --stack ${AWS::StackName} --resource LinuxInstance --configsets ec2_bootstrap --region ${AWS::Region} || cfn_fail;
+          qs_status;
+          [ $(qs_status) == 0 ] && cfn_success || cfn_fail "signaled"
     Metadata:
       AWS::CloudFormation::Authentication: 
         S3AccessCreds: 
@@ -294,8 +295,7 @@ Resources:
           files:
             /tmp/bootstrap.sh:
               source: !Sub
-                - >-
-                  https://${S3Bucket}.${S3Region}.amazonaws.com/${KeyPrefix}scripts/print_stdout.sh
+                - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${KeyPrefix}scripts/print_stdout.sh
                 - S3Bucket: !If
                       - UsingDefaultBucket
                       - !Sub 'aws-quickstart-${AWS::Region}'
