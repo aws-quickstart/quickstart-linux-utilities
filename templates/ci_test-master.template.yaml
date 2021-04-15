@@ -73,7 +73,7 @@ Resources:
     Properties:
       TemplateURL:
         !Sub
-          - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
+          - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
           - S3Bucket: !If
               - UsingDefaultBucket
               - !Sub 'aws-quickstart-${AWS::Region}'
@@ -86,7 +86,6 @@ Resources:
         AvailabilityZones: !Join 
           - ','
           - !Ref AvailabilityZones
-        KeyPairName: !Ref KeyPairName
         NumberOfAZs: '2'
         PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
