@@ -306,9 +306,7 @@ function qs_aws-cfn-bootstrap() {
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
         zypper -n refresh && zypper -n update
-        zypper -n install python2-pip
-        pip2.7 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-        echo "[WARNING] not implemeneted"
+        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
     else
         exit 1
     fi
