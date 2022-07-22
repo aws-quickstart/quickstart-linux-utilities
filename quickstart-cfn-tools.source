@@ -5,8 +5,8 @@
 
 # Supported only while bootstrapping Amazon ec2:
 #
-# -Amazon Linux2        
-# -Red Hat Enterprise Linux 7   
+# -Amazon Linux2
+# -Red Hat Enterprise Linux 7
 # -Ubuntu 20.04
 #
 #
@@ -402,7 +402,6 @@ else
     echo "[FAIL] : Dependencies not satisfied!"
     exit 1
 fi
-
 }
 
 # $1 = NumberOfRetries $2 = Command
@@ -424,11 +423,9 @@ function qs_retry_command() {
                         sleep $((((__backoff_delay++)) + ((__current_try++))))
                 fi
         done
-
 }
 
 # start exec
 available_functions
 install_dependancies
 # end exec
-
