@@ -5,8 +5,8 @@
 
 # Supported only while bootstrapping Amazon ec2:
 #
-# -Amazon Linux2        
-# -Red Hat Enterprise Linux 7   
+# -Amazon Linux2
+# -Red Hat Enterprise Linux 7
 # -Ubuntu 20.04
 #
 #
@@ -306,9 +306,7 @@ function qs_aws-cfn-bootstrap() {
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
         zypper -n refresh && zypper -n update
-        zypper -n install python2-pip
-        pip2.7 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-        echo "[WARNING] not implemeneted"
+        pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
     else
         exit 1
     fi
@@ -404,7 +402,6 @@ else
     echo "[FAIL] : Dependencies not satisfied!"
     exit 1
 fi
-
 }
 
 # $1 = NumberOfRetries $2 = Command
@@ -426,11 +423,9 @@ function qs_retry_command() {
                         sleep $((((__backoff_delay++)) + ((__current_try++))))
                 fi
         done
-
 }
 
 # start exec
 available_functions
 install_dependancies
 # end exec
-
