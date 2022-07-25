@@ -176,7 +176,7 @@ function  qs_bootstrap_pip() {
             curl --silent \
              --show-error \
             --retry 5 \
-            https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo $PYTHON_EXECUTEABLE
+            https://bootstrap.pypa.io/pip/2.7/get-pip.py | $PYTHON_EXECUTEABLE
         fi
     else
         echo $PYTHON_EXECUTEABLE
@@ -195,7 +195,7 @@ function  qs_cloudwatch_tracklog() {
 function  qs_cloudwatch_install() {
     echo "[INFO] Install AWS CloudWatch Agent"
     REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
-    sudo echo $'[general]\nstate_file = /var/awslogs/state/agent-state' >awslogs.conf
+    echo $'[general]\nstate_file = /var/awslogs/state/agent-state' > awslogs.conf
     cat cloudwatch_logs.stub | sed s,__LOG__,/var/log/syslog,g >> awslogs.conf
     qs_get-python-path PYTHON_EXECUTEABLE
     if  [ $? -eq 0 ] ;then
@@ -203,7 +203,7 @@ function  qs_cloudwatch_install() {
      --show-error \
     --retry 5 \
     https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
-    sudo $PYTHON_EXECUTEABLE ./awslogs-agent-setup.py --region $REGION -c awslogs.conf -n
+    $PYTHON_EXECUTEABLE ./awslogs-agent-setup.py --region $REGION -c awslogs.conf -n
     else
       qs_int_is_svc_active awslogs && echo "[INFO] Cloudwatch Service is running"
         exit 1
@@ -267,34 +267,34 @@ function qs_aws-cfn-bootstrap() {
 
     echo "[INSTALL aws-cfn-bootstrap tools]"
     if [ "$INSTANCE_OSTYPE" == "amzn" ] && [ "$INSTANCE_OSVERSION" == "2" ]; then
-            sudo cp scripts/opt-aws.sh /etc/profile.d/
-            sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
+            cp scripts/opt-aws.sh /etc/profile.d/
+            ln -s /opt/aws/bin/cfn-* /usr/bin/
             export PATH=$PATH:/opt/aws/bin
-            sudo yum install -y python3-pip
-            sudo alternatives --set python /usr/bin/python3
+            yum install -y python3-pip
+            alternatives --set python /usr/bin/python3
     elif [ "$INSTANCE_OSTYPE" == "amzn" ]; then
             echo "Warning: Support for this OS Version is deprecated - Consider upgrading to Amazon Linux 2"
-            sudo cp scripts/opt-aws.sh /etc/profile.d/
-            sudo ln -s /opt/aws/bin/cfn-* /usr/bin/
+            cp scripts/opt-aws.sh /etc/profile.d/
+            ln -s /opt/aws/bin/cfn-* /usr/bin/
             export PATH=$PATH:/opt/aws/bin
-            sudo yum install -y python36-pip
-            sudo alternatives --set python /usr/bin/python3.6
+            yum install -y python36-pip
+            alternatives --set python /usr/bin/python3.6
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "16.04" ]; then
         echo "Warning: Support for this OS Version is deprecated - Consider upgrading to 20.04"
-        sudo apt-get update -y
-        sudo apt-get install python2.7 python-pip -y
-        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        apt-get update -y
+        apt-get install python2.7 python-pip -y
+        pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "18.04" ]; then
         echo "Warning: Support for this OS Version is deprecated - Consider upgrading to 20.04"
-        sudo apt-get update -y
-        sudo apt-get install python-pip -y
-        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        apt-get update -y
+        apt-get install python-pip -y
+        pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "ubuntu" ] && [ "$INSTANCE_OSVERSION" == "20.04" ]; then
-        sudo apt-get update -y
+        apt-get update -y
         apt-get install python2.7 -y
         curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-        sudo python2.7 get-pip.py
-        sudo pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+        python2.7 get-pip.py
+        pip2 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
     elif [ "$INSTANCE_OSTYPE" == "rhel" ]; then
         yum update -y
         pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
