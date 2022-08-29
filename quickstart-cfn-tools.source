@@ -219,8 +219,6 @@ function qs_enable_epel() {
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
   elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
     yum install -y epel-release
-  elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
-    echo "Enabled!"
   else
     exit 1
   fi
@@ -246,8 +244,6 @@ function qs_update-os() {
     yum update -y
   elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
     yum update -y
-  elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
-    dnf update -y
   elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
     zypper -n refresh && zypper -n update
   else
@@ -289,8 +285,6 @@ function qs_aws-cfn-bootstrap() {
   elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
     yum update -y
     qs_bootstrap_pip
-    pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-  elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
     pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
   elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
     zypper -n refresh && zypper -n update
@@ -379,9 +373,6 @@ function install_dependancies() {
 
   elif [ "$INSTANCE_OSTYPE" == "centos" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && yum clean && yum install curl -y || return 0
-
-  elif [ "$INSTANCE_OSTYPE" == "fedora" ]; then
-    check_cmd curl;[[ $? -eq 1 ]] && dnf clean && dnf install curl -y || return 0
 
   elif [ "$INSTANCE_OSTYPE" == "sles" ]; then
     check_cmd curl;[[ $? -eq 1 ]] && zypper -n refresh && zypper -n install curl || return 0
